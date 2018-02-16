@@ -1,4 +1,4 @@
-export const pathFromBezieCurve = (cubicBezierCurve) => {
+export const pathFromBezierCurve = (cubicBezierCurve) => {
   const {
     initialAxis, initialControlPoint, endingControlPoint, endingAxis,
   } = cubicBezierCurve;
