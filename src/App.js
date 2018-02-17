@@ -10,7 +10,7 @@ class App extends Component {
     }, 10);
 
     window.onresize = () => {
-      const cnv = document.getElementById('aliens-go-home-canvas');
+      const cnv = document.getElementById('aliens-game-canvas');
       cnv.style.width = `${window.innerWidth}px`;
       cnv.style.height = `${window.innerHeight}px`;
     };
