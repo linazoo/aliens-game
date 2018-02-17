@@ -8,6 +8,13 @@ class App extends Component {
     setInterval(() => {
       this.props.moveObjects(this.canvasMousePosition);
     }, 10);
+
+    window.onresize = () => {
+      const cnv = document.getElementById('aliens-game-canvas');
+      cnv.style.width = `${window.innerWidth}px`;
+      cnv.style.height = `${window.innerHeight}px`;
+    };
+    window.onresize();
   }
 
   trackMouse(event) {
