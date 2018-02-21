@@ -5,7 +5,7 @@ function shoot(state, action) {
 
   const { cannonBalls } = state.gameState;
 
-  if (cannonBalls.length === 2) return state;
+  if (cannonBalls.length === 4) return state;
 
   const { x, y } = action.mousePosition;
 

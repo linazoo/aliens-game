@@ -1,6 +1,6 @@
 import {
   LEADERBOARD_LOADED, LOGGED_IN,
-  MOVE_OBJECTS, START_GAME
+  MOVE_OBJECTS, START_GAME, SHOOT
 } from '../actions';
 import moveObjects from './moveObjects';
 import startGame from './startGame';
