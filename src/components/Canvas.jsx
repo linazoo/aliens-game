@@ -23,6 +23,7 @@ const Canvas = (props) => {
       preserveAspectRatio="xMaxYMax none"
       onMouseMove={props.trackMouse}
       viewBox={viewBox}
+      onClick={props.shoot}
     >
       <defs>
         <filter id="shadow">
@@ -31,6 +32,12 @@ const Canvas = (props) => {
       </defs>
       <Sky />
       <Ground />
+      {props.gameState.cannonBalls.map(cannonBall => (
+        <CannonBall
+          key={cannonBall.id}
+          position={cannonBall.position}
+        />
+      ))}
       <CannonPipe rotation={props.angle} />
       <CannonBase />
       <CurrentScore score={15} />
@@ -85,6 +92,7 @@ Canvas.propTypes = {
     name: PropTypes.string.isRequired,
     picture: PropTypes.string.isRequired,
   })),
+  shoot: PropTypes.func.isRequired,
 };
 
 Canvas.defaultProps = {
