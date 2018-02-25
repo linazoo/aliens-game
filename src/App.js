@@ -19,6 +19,8 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.shoot = this.shoot.bind(this);
+    this.socket = null;
+    this.currentPlayer = null;
   }
 
   componentDidMount() {
@@ -38,30 +40,21 @@ class App extends Component {
 
       this.props.loggedIn(currentPlayer);
 
-      const socket = io('http://localhost:3001', {
+      this.socket = io('http://localhost:3001', {
         query: `token=${Auth0.getAccessToken()}`,
       });
 
-      let emitted = false;
-      socket.on('players', (players) => {
-        this.props.leaderboardLoaded(players);
+      this.socket = io('http://localhost:3001', {
+        query: `token=${Auth0.getAccessToken()}`,
+      });
 
-        if (emitted) return;
-        socket.emit('new-max-score', {
-          id: playerProfile.sub,
-          maxScore: 120,
-          name: playerProfile.name,
-          picture: playerProfile.picture,
+      this.socket.on('players', (players) => {
+        this.props.leaderboardLoaded(players);
+        players.forEach((player) => {
+          if (player.id === this.currentPlayer.id) {
+            this.currentPlayer.maxScore = player.maxScore;
+          }
         });
-        emitted = true;
-        setTimeout(() => {
-          socket.emit('new-max-score', {
-            id: playerProfile.sub,
-            maxScore: 222,
-            name: playerProfile.name,
-            picture: playerProfile.picture,
-          });
-        }, 5000);
       });
     });
 
@@ -76,6 +69,18 @@ class App extends Component {
     };
     window.onresize();
   }
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.gameState.started && this.props.gameState.started) {
+      if (this.currentPlayer.maxScore < this.props.gameState.kills) {
+        this.socket.emit('new-max-score', {
+          ...this.currentPlayer,
+          maxScore: this.props.gameState.kills,
+        });
+      }
+    }
+  }
+
   shoot() {
     this.props.shoot(this.canvasMousePosition);
   }
