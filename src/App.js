@@ -19,47 +19,42 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.shoot = this.shoot.bind(this);
-    this.socket = null;
-    this.currentPlayer = null;
   }
 
   componentDidMount() {
+    const self = this;
 
     Auth0.handleAuthCallback();
 
     Auth0.subscribe((auth) => {
       if (!auth) return;
 
-      const playerProfile = Auth0.getProfile();
-      const currentPlayer = {
-        id: playerProfile.sub,
+      self.playerProfile = Auth0.getProfile();
+      self.currentPlayer = {
+        id: self.playerProfile.sub,
         maxScore: 0,
-        name: playerProfile.name,
-        picture: playerProfile.picture,
+        name: self.playerProfile.name,
+        picture: self.playerProfile.picture,
       };
 
-      this.props.loggedIn(currentPlayer);
+      this.props.loggedIn(self.currentPlayer);
 
-      this.socket = io('http://localhost:3001', {
+      self.socket = io('http://localhost:3001', {
         query: `token=${Auth0.getAccessToken()}`,
       });
 
-      this.socket = io('http://localhost:3001', {
-        query: `token=${Auth0.getAccessToken()}`,
-      });
-
-      this.socket.on('players', (players) => {
+      self.socket.on('players', (players) => {
         this.props.leaderboardLoaded(players);
         players.forEach((player) => {
-          if (player.id === this.currentPlayer.id) {
-            this.currentPlayer.maxScore = player.maxScore;
+          if (player.id === self.currentPlayer.id) {
+            self.currentPlayer.maxScore = player.maxScore;
           }
         });
       });
     });
 
     setInterval(() => {
-      this.props.moveObjects(this.canvasMousePosition);
+      self.props.moveObjects(self.canvasMousePosition);
     }, 10);
 
     window.onresize = () => {
@@ -68,17 +63,6 @@ class App extends Component {
       cnv.style.height = `${window.innerHeight}px`;
     };
     window.onresize();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.gameState.started && this.props.gameState.started) {
-      if (this.currentPlayer.maxScore < this.props.gameState.kills) {
-        this.socket.emit('new-max-score', {
-          ...this.currentPlayer,
-          maxScore: this.props.gameState.kills,
-        });
-      }
-    }
   }
 
   shoot() {
